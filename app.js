@@ -9,7 +9,7 @@ const btnClose = document.getElementById("btn-close")
 
 area.addEventListener('click', e => {
   if (e.target.className = 'box') {
-    move % 2 === 0 ? e.target.innerHTML = 'X' : e.target.innerHTML = '0'
+    move % 2 === 0 ? e.target.innerHTML = 'X' : e.target.innerHTML = 'O'
     move++
     check()
   }
@@ -34,10 +34,10 @@ const check = () => {
       && boxes[arr[i][2]].innerHTML == "X") {
       result = 'X win'
       prepareResult(result)
-    } else if (boxes[arr[i][0]].innerHTML == "0"
-      && boxes[arr[i][1]].innerHTML == "0"
-      && boxes[arr[i][2]].innerHTML == "0") {
-      result = '0 win'
+    } else if (boxes[arr[i][0]].innerHTML == "O"
+      && boxes[arr[i][1]].innerHTML == "O"
+      && boxes[arr[i][2]].innerHTML == "O") {
+      result = 'O win'
       prepareResult(result)
     }
   }
