@@ -1,57 +1,69 @@
-const area = document.getElementById("area")
-let move = 0;
-let result = '';
+const board_el = document.querySelector('#board');
+const cell_els = document.querySelectorAll('#board .cell');
 
-const contentWrapper = document.getElementById("content")
-const modalResult = document.getElementById("modal-result-wrapper")
-const overlay = document.getElementById("overlay")
-const btnClose = document.getElementById("btn-close")
+const combinations = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],]
 
-area.addEventListener('click', e => {
-  if (e.target.className = 'box') {
-    move % 2 === 0 ? e.target.innerHTML = 'X' : e.target.innerHTML = 'O'
-    move++
-    check()
+let currentTurn;
+
+setup()
+
+function setup() {
+  board_el.classList.remove('turn-x', 'turn-o');
+
+  for (let cell of cell_els) {
+    cell.classList.remove('x', 'o');
+    cell.addEventListener('click', fillCell, { once: true })
   }
-})
 
-const check = () => {
-  const boxes = document.getElementsByClassName('box')
-  const arr = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
+  currentTurn = Math.round(Math.random(0, 1)) == 1 ? 'x' : 'o';
+  board_el.classList.add(`turn-${currentTurn}`);
+}
 
-  for (i = 0; i < arr.length; i++) {
-    if (boxes[arr[i][0]].innerHTML == "X"
-      && boxes[arr[i][1]].innerHTML == "X"
-      && boxes[arr[i][2]].innerHTML == "X") {
-      result = 'X win'
-      prepareResult(result)
-    } else if (boxes[arr[i][0]].innerHTML == "O"
-      && boxes[arr[i][1]].innerHTML == "O"
-      && boxes[arr[i][2]].innerHTML == "O") {
-      result = 'O win'
-      prepareResult(result)
+function fillCell() {
+  this.classList.add(currentTurn);
+
+  if (checkForWin()) {
+    const restart = confirm(currentTurn.toUpperCase() + ' is the winner! Restart?');
+    if (restart) setup();
+  } else if (checkForDraw()) {
+    const restart = confirm('Draw! Restart?');
+    if (restart) setup();
+  } else {
+    currentTurn = currentTurn == 'x' ? 'o' : 'x';
+    board_el.classList.remove('turn-o', 'turn-x')
+    board_el.classList.add(`turn-${currentTurn}`);
+  }
+}
+
+function checkForWin() {
+  return combinations.some(combination => {
+    return combination.every(c => {
+      if (cell_els[c].classList.contains(currentTurn)) {
+        return true
+      }
+
+      return false
+    })
+  })
+}
+
+function checkForDraw() {
+  return [...cell_els].every(c => {
+    if (
+      c.classList.contains('x') ||
+      c.classList.contains('o')
+    ) {
+      return true
     }
-  }
-}
 
-const prepareResult = winner => {
-  contentWrapper.innerHTML = `Win ${winner}!`
-  modalResult.style.display = 'block'
+    return false
+  })
 }
-
-const closeModal = () => {
-  modalResult.style.display = 'none';
-  location.reload()
-}
-
-overlay.addEventListener('click', closeModal)
-btnClose.addEventListener('click', closeModal)
